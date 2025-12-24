@@ -23,8 +23,48 @@ This repository provides high-quality, well-tested userscripts that extend Perpl
 
 | Script | Description | Status |
 |--------|-------------|--------|
+| `github-auto-approve` | Auto-approve GitHub operations based on configurable rules | ✅ Active |
 | `vitemonkey-built` | [Coming soon] Template for ViteMonkey-based scripts | 🚧 Template |
 | `just-written` | [Coming soon] Example script with modern TypeScript | 🚧 Example |
+
+### GitHub Auto-Approve
+
+**Features:**
+- 🎯 Repository whitelisting with wildcards (`owner/*`, `*`)
+- ⏱️ Configurable countdown timer with visual feedback
+- 🎨 Beautiful gradient UI overlay
+- ⚙️ Config panel (Ctrl+Shift+G)
+- 📝 Audit logging to console
+- 🔒 Operation type filtering (create, update, delete)
+- 📂 File path pattern matching
+
+**Quick Start:**
+1. Install the userscript from `/dist/perplexity-ai-userscripts.user.js`
+2. Open Perplexity AI
+3. Press `Ctrl+Shift+G` to open configuration
+4. Add your repository rules
+5. GitHub operations will auto-approve based on your rules
+
+**Example Configuration:**
+```json
+{
+  "enabled": true,
+  "defaultDelay": 5,
+  "rules": [
+    {
+      "repoPattern": "pv-udpv/*",
+      "operations": ["create", "update"],
+      "delay": 3,
+      "autoApprove": true
+    }
+  ]
+}
+```
+
+**Security:**
+- Delete operations require explicit whitelisting
+- Visual countdown allows cancellation
+- All actions logged to console for audit trail
 
 ---
 
