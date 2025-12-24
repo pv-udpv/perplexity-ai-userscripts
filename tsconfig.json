@@ -19,7 +19,16 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "paths": {
+      "@shared": ["scripts/shared"],
+      "@shared/*": ["scripts/shared/*"],
+      "@vitemonkey-built": ["scripts/vitemonkey-built"],
+      "@vitemonkey-built/*": ["scripts/vitemonkey-built/*"],
+      "@just-written": ["scripts/just-written"],
+      "@just-written/*": ["scripts/just-written/*"]
+    }
   },
   "include": ["scripts/**/*.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
