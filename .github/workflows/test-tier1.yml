@@ -1,0 +1,85 @@
+name: Tier 1 - Shared Modules Tests
+
+on:
+  push:
+    branches:
+      - main
+      - feat/tier1-shared-modules
+    paths:
+      - 'scripts/shared/**'
+      - '.github/workflows/test-tier1.yml'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'vitest.config.ts'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'scripts/shared/**'
+      - '.github/workflows/test-tier1.yml'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'vitest.config.ts'
+
+jobs:
+  test-shared-modules:
+    name: Test Shared Modules
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18, 20]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Run shared modules tests
+        run: npm run test -- scripts/shared
+
+      - name: Generate coverage report
+        if: matrix.node-version == 20
+        run: npm run test:coverage -- scripts/shared
+
+      - name: Upload coverage to artifacts
+        if: matrix.node-version == 20
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
