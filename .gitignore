@@ -5,8 +5,8 @@ node_modules/
 .pnp
 .pnp.js
 
-# Build outputs
-dist/
+# Build outputs (keep dist/ for userscripts)
+# dist/
 build/
 .vite/
 
