@@ -1,0 +1,11 @@
+{
+  "name": "GitHub Auto-Approve for Perplexity AI",
+  "namespace": "https://github.com/pv-udpv/perplexity-ai-userscripts",
+  "version": "1.0.0",
+  "description": "Automatically approve GitHub operations in Perplexity AI based on configurable rules. Supports repository whitelisting, operation filtering, and countdown timers.",
+  "author": "pv-udpv",
+  "license": "MIT",
+  "match": ["https://www.perplexity.ai/*"],
+  "grant": ["GM_setValue", "GM_getValue"],
+  "run-at": "document-idle"
+}

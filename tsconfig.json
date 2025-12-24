@@ -19,8 +19,9 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "typeRoots": ["./types", "./node_modules/@types"]
   },
-  "include": ["scripts/**/*.ts"],
+  "include": ["scripts/**/*.ts", "types/**/*.d.ts"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }

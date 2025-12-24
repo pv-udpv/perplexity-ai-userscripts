@@ -145,7 +145,7 @@ function setupEventListeners(config: ScriptConfig): void {
 /**
  * Create and inject UI elements.
  */
-function setupUI(config: ScriptConfig): void {
+function setupUI(_config: ScriptConfig): void {
   try {
     // Example: Add a button to the Perplexity UI
     const container = document.querySelector('.perplexity-container');

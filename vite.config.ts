@@ -4,11 +4,11 @@ import monkey from 'vite-plugin-monkey';
 export default defineConfig({
   plugins: [
     monkey({
-      entry: 'scripts/just-written/index.ts',
+      entry: 'scripts/github-auto-approve/index.ts',
       userscript: {
         namespace: 'https://github.com/pv-udpv/perplexity-ai-userscripts',
         match: ['https://www.perplexity.ai/*'],
-        grant: ['GM_setValue', 'GM_getValue', 'GM_xmlhttpRequest'],
+        grant: ['GM_setValue', 'GM_getValue'],
       },
     }),
   ],
