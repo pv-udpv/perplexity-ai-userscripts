@@ -153,7 +153,14 @@ The fastest way to create a plugin:
 npm run scaffold my-plugin-name
 ```
 
-**Note:** Currently the scaffold script needs to be created. For now, manually copy an existing plugin.
+This automatically creates:
+- `scripts/my-plugin-name/` directory
+- `index.ts` - Main entry point with boilerplate
+- `manifest.json` - Plugin metadata
+- `types.ts` - TypeScript type definitions  
+- `utils.ts` - Helper functions
+- `__tests__/index.test.ts` - Test file
+- `README.md` - Plugin documentation
 
 ### Manual Creation
 

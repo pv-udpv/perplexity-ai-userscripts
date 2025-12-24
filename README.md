@@ -8,6 +8,20 @@ A curated collection of open-source userscripts for enhancing [Perplexity AI](ht
 
 ---
 
+## 📖 Complete Documentation
+
+### 👤 For Users
+- **[INSTALLATION.md](./INSTALLATION.md)** - Complete guide to installing, updating, and troubleshooting userscripts
+
+### 👨‍💻 For Developers  
+- **[PLUGIN_DEVELOPMENT_GUIDE.md](./PLUGIN_DEVELOPMENT_GUIDE.md)** - Comprehensive tutorial for creating plugins
+
+### 📚 Additional Guides
+- **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contribution guidelines
+- **[RULES.md](./RULES.md)** - Code standards and conventions
+
+---
+
 ## 🎯 Overview
 
 This repository provides high-quality, well-tested userscripts that extend Perplexity AI functionality:
