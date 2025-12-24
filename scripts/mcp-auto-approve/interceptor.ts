@@ -49,6 +49,9 @@ export class MCPInterceptor {
    * Intercept WebSocket API
    */
   interceptWebSocket(handler: (payload: MCPPayload) => void): void {
+    // Save reference to original send and instance context
+    const originalSend = this.originalWebSocketSend;
+
     WebSocket.prototype.send = function (data: string | ArrayBufferLike | Blob | ArrayBufferView) {
       if (typeof data === 'string') {
         try {
@@ -67,7 +70,8 @@ export class MCPInterceptor {
         }
       }
 
-      return MCPInterceptor.prototype.originalWebSocketSend.call(this, data);
+      // Call original send with correct context
+      return originalSend.call(this, data);
     };
 
     logger.info('WebSocket interceptor installed');
