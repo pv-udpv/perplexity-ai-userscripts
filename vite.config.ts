@@ -1,0 +1,20 @@
+import { defineConfig } from 'vite';
+import monkey from 'vite-plugin-monkey';
+
+export default defineConfig({
+  plugins: [
+    monkey({
+      entry: 'scripts/*/index.ts',
+      userscript: {
+        namespace: 'https://github.com/pv-udpv/perplexity-ai-userscripts',
+        match: ['https://www.perplexity.ai/*'],
+        grant: ['GM_setValue', 'GM_getValue', 'GM_xmlhttpRequest'],
+      },
+    }),
+  ],
+  build: {
+    target: 'ES2020',
+    minify: 'terser',
+    sourcemap: true,
+  },
+});

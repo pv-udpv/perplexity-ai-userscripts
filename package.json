@@ -1,0 +1,52 @@
+{
+  "name": "perplexity-ai-userscripts",
+  "version": "1.0.0",
+  "description": "Collection of userscripts for Perplexity AI enhancement. ViteMonkey + Tampermonkey-compatible scripts for improved productivity and workflow automation.",
+  "private": false,
+  "author": "pv-udpv",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pv-udpv/perplexity-ai-userscripts.git"
+  },
+  "scripts": {
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "lint": "eslint . --ext .ts,.tsx --max-warnings 0",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "scaffold": "node scripts/scaffold.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^8.57.0",
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.20.0",
+    "@typescript-eslint/parser": "^6.20.0",
+    "@vitest/coverage-v8": "^1.1.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vite-plugin-monkey": "^4.0.0",
+    "vitest": "^1.1.0"
+  },
+  "keywords": [
+    "userscript",
+    "tampermonkey",
+    "perplexity-ai",
+    "productivity",
+    "browser-extension",
+    "typescript",
+    "vitemonkey"
+  ],
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
