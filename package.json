@@ -1,6 +1,7 @@
 {
   "name": "perplexity-ai-userscripts",
   "version": "1.0.0",
+  "type": "module",
   "description": "Collection of userscripts for Perplexity AI enhancement. ViteMonkey + Tampermonkey-compatible scripts for improved productivity and workflow automation.",
   "private": false,
   "author": "pv-udpv",

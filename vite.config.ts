@@ -4,7 +4,7 @@ import monkey from 'vite-plugin-monkey';
 export default defineConfig({
   plugins: [
     monkey({
-      entry: 'scripts/*/index.ts',
+      entry: 'scripts/just-written/index.ts',
       userscript: {
         namespace: 'https://github.com/pv-udpv/perplexity-ai-userscripts',
         match: ['https://www.perplexity.ai/*'],
@@ -14,7 +14,7 @@ export default defineConfig({
   ],
   build: {
     target: 'ES2020',
-    minify: 'terser',
+    minify: false,
     sourcemap: true,
   },
 });
