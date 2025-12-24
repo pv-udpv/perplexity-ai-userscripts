@@ -226,11 +226,15 @@ function logAuditTrail(payload: MCPPayload, decision: ApprovalDecision): void {
   console.log('Matched Rule:', auditEntry.rule);
   console.groupEnd();
 
-  // Store in audit log (optional)
-  storage.get<any[]>('audit-log').then((log) => {
-    const updatedLog = [...(log || []), auditEntry].slice(-100); // Keep last 100
-    storage.set('audit-log', updatedLog);
-  });
+  // Store in audit log with error handling
+  storage.get<any[]>('audit-log')
+    .then((log) => {
+      const updatedLog = [...(log || []), auditEntry].slice(-100); // Keep last 100
+      return storage.set('audit-log', updatedLog);
+    })
+    .catch((error) => {
+      logger.error('Failed to store audit log entry', error);
+    });
 }
 
 /**
