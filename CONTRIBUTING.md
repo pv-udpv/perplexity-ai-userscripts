@@ -1,5 +1,14 @@
 # Contributing to perplexity-ai-userscripts
 
+Thank you for your interest in contributing! This guide will help you get started.
+
+## 📚 Documentation
+
+Before contributing, please read:
+- **[PLUGIN_DEVELOPMENT_GUIDE.md](./PLUGIN_DEVELOPMENT_GUIDE.md)** - Complete guide to creating plugins
+- **[INSTALLATION.md](./INSTALLATION.md)** - For testing your changes as an end user
+- **[RULES.md](./RULES.md)** - Code standards and conventions
+
 ## Code of Conduct
 - Be respectful and constructive
 - Focus on improving Perplexity AI user experience
