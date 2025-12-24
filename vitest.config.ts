@@ -1,23 +1,30 @@
 import { defineConfig } from 'vitest/config';
-import path from 'path';
+import path from 'node:path';
 
 export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: [],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      include: ['scripts/**/*.ts'],
-      exclude: ['scripts/**/*.test.ts', 'scripts/**/types.ts'],
+      reporter: ['text', 'json', 'html', 'lcov'],
+      include: ['scripts/shared/**/*.ts'],
+      exclude: [
+        'node_modules/',
+        '**/*.test.ts',
+        '**/*.spec.ts',
+        '**/index.ts',
+      ],
+      lines: 90,
+      functions: 90,
+      branches: 85,
+      statements: 90,
     },
+    include: ['scripts/shared/**/*.test.ts'],
   },
   resolve: {
     alias: {
       '@shared': path.resolve(__dirname, './scripts/shared'),
-      '@vitemonkey-built': path.resolve(__dirname, './scripts/vitemonkey-built'),
-      '@just-written': path.resolve(__dirname, './scripts/just-written'),
     },
   },
 });

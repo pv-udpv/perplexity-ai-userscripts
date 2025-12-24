@@ -32,8 +32,8 @@ Complete guide for developing userscript plugins for Perplexity AI.
 
 ```bash
 # Clone repository
-git clone https://github.com/pv-udpv/perplexity-ai-userscripts.git
-cd perplexity-ai-userscripts
+git clone https://github.com/pv-udpv/perplexity-ai-plug.git
+cd perplexity-ai-plug
 
 # Install dependencies
 npm install
@@ -56,7 +56,7 @@ npm run build
 This project uses a **modular plugin architecture** where each userscript is a self-contained plugin:
 
 ```
-perplexity-ai-userscripts/
+perplexity-ai-plug/
 ├── scripts/
 │   ├── shared/              # Shared utilities (storage, events, logger)
 │   ├── my-plugin/           # Your plugin
@@ -98,8 +98,8 @@ perplexity-ai-userscripts/
 
 ```bash
 # Fork on GitHub, then clone your fork
-git clone https://github.com/YOUR_USERNAME/perplexity-ai-userscripts.git
-cd perplexity-ai-userscripts
+git clone https://github.com/YOUR_USERNAME/perplexity-ai-plug.git
+cd perplexity-ai-plug
 ```
 
 ### 2. Install Dependencies
@@ -176,7 +176,7 @@ cd scripts/my-plugin
 ```json
 {
   "name": "My Awesome Plugin",
-  "namespace": "https://github.com/YOUR_USERNAME/perplexity-ai-userscripts",
+  "namespace": "https://github.com/YOUR_USERNAME/perplexity-ai-plug",
   "version": "1.0.0",
   "description": "Does something awesome on Perplexity AI",
   "author": "Your Name",
@@ -493,7 +493,7 @@ These become `@` directives in the compiled script:
 
 ```json
 {
-  "namespace": "https://github.com/YOUR_USERNAME/perplexity-ai-userscripts",
+  "namespace": "https://github.com/YOUR_USERNAME/perplexity-ai-plug",
   "match": ["https://www.perplexity.ai/*"],
   "grant": [
     "GM_setValue",

@@ -1,0 +1,10 @@
+{
+  "name": "MCP Auto-Approve",
+  "version": "1.0.0",
+  "description": "Automatically approves MCP (Model Context Protocol) operations based on configurable rules. Supports GitHub, Linear, Slack, and more.",
+  "author": "pv-udpv",
+  "match": ["https://www.perplexity.ai/*"],
+  "run-at": "document-end",
+  "grant": ["GM_setValue", "GM_getValue", "GM_deleteValue"],
+  "icon": "🤖"
+}

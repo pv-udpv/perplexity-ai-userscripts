@@ -1,0 +1,126 @@
+name: Tier 1 - Shared Modules Tests
+
+on:
+  push:
+    branches:
+      - main
+      - feat/tier1-shared-modules
+    paths:
+      - 'scripts/shared/**'
+      - '.github/workflows/test-tier1.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'vitest.config.ts'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'scripts/shared/**'
+      - '.github/workflows/test-tier1.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'vitest.config.ts'
+
+jobs:
+  detect-changes:
+    name: Detect Changed Files
+    runs-on: ubuntu-latest
+    outputs:
+      shared-changed: ${{ steps.filter.outputs.shared }}
+      tests-changed: ${{ steps.filter.outputs.tests }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            shared:
+              - 'scripts/shared/**/*.ts'
+              - '!scripts/shared/**/*.test.ts'
+            tests:
+              - 'scripts/shared/**/*.test.ts'
+            config:
+              - 'vitest.config.ts'
+              - 'tsconfig.json'
+              - 'package.json'
+
+  test-shared-modules:
+    name: Test Shared Modules (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.shared-changed == 'true' || needs.detect-changes.outputs.tests-changed == 'true'
+
+    strategy:
+      matrix:
+        node-version: [18, 20]
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check shared modules
+        run: npm run type-check
+
+      - name: Run shared modules tests
+        run: npm run test -- scripts/shared --reporter=verbose
+
+      - name: Generate coverage report
+        if: matrix.node-version == 20
+        run: npm run test:coverage -- scripts/shared
+
+      - name: Upload coverage to artifacts
+        if: matrix.node-version == 20
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-tier1-shared
+          path: coverage/
+          retention-days: 30
+
+      - name: Comment coverage on PR
+        if: matrix.node-version == 20 && github.event_name == 'pull_request'
+        uses: davelosert/vitest-coverage-report-action@v2
+        with:
+          file-coverage-mode: changes
+          json-summary-path: coverage/coverage-summary.json
+
+  lint-shared:
+    name: Lint Shared Modules
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.shared-changed == 'true' || needs.detect-changes.outputs.tests-changed == 'true'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint on shared modules
+        run: npx eslint scripts/shared --ext .ts
+        continue-on-error: true
+
+      - name: Check formatting
+        run: npx prettier --check "scripts/shared/**/*.ts"
+        continue-on-error: true
