@@ -21,6 +21,7 @@ import type {
   CountdownState,
   AuditLogEntry,
   OperationType,
+  ApprovalRule,
 } from './types';
 import {
   logger,
@@ -708,14 +709,13 @@ function createConfigPanel(): HTMLElement {
     background: rgba(0, 0, 0, 0.5);
     z-index: 99999;
   `;
-  backdrop.addEventListener('click', () => panel.remove());
-  
-  // Insert backdrop before panel
-  document.body.appendChild(backdrop);
   backdrop.addEventListener('click', () => {
     panel.remove();
     backdrop.remove();
   });
+  
+  // Insert backdrop before panel
+  document.body.appendChild(backdrop);
   
   return panel;
 }

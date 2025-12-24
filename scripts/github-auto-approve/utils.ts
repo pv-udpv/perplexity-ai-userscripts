@@ -2,7 +2,7 @@
  * Utility functions for GitHub Auto-Approve userscript.
  */
 
-import type { AutoApproveConfig, ApprovalRule, AuditLogEntry } from './types';
+import type { AutoApproveConfig, ApprovalRule, AuditLogEntry, OperationType } from './types';
 
 const STORAGE_KEY = 'github-auto-approve-config';
 const LOG_PREFIX = '[github-auto-approve]';
@@ -233,7 +233,7 @@ export function waitForElement(
  * Generate unique ID.
  */
 export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
 /**
