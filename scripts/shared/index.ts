@@ -3,7 +3,7 @@
  *
  * Central hub for all shared utilities used across scripts.
  * This barrel export ensures clean imports:
- * - import { storage, events, debounce } from '@shared';
+ * - import { storage, events, debounce, createManifest } from '@shared';
  */
 
 // Storage
@@ -29,3 +29,23 @@ export {
   isElementInViewport,
   generateId,
 } from './utils';
+
+// Manifest
+export {
+  createManifest,
+  ManifestBuilder,
+} from './manifest';
+export type {
+  UserscriptManifest,
+  SimpleManifest,
+  RunAt,
+  GrantPermission,
+  Resource,
+} from './manifest';
+
+// Manifest Generator
+export {
+  generateManifest,
+  validateManifest,
+  parseManifest,
+} from './manifest-generator';
