@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Perplexity Storage Dumper
 // @namespace    https://github.com/pv-udpv/perplexity-ai-plug
-// @version      1.0.0
+// @version      1.1.0
 // @description  Dump all Perplexity.ai runtime context (storage, caches, state) to JSON for offline analysis
 // @author       pv-udpv
 // @match        https://www.perplexity.ai/*
@@ -18,6 +18,23 @@
     'use strict';
 
     // ========================================
+    // Configuration
+    // ========================================
+
+    const CONFIG = {
+        // Truncation settings
+        MAX_STRING_LENGTH: 1000,           // Characters before truncation
+        MAX_PREVIEW_LENGTH: 200,           // Preview length in truncated.preview
+        MAX_PARSED_DEPTH: 3,               // Max depth for parsed JSON objects
+        MAX_ARRAY_ITEMS: 10,               // Max array items to include
+        
+        // What to include in output
+        INCLUDE_RAW_VALUE: true,           // Keep original value (can be huge)
+        INCLUDE_TRUNCATED_PREVIEW: true,   // Add preview of truncated content
+        INCLUDE_PARSED_LIMITED: true,      // Add depth-limited parsed JSON
+    };
+
+    // ========================================
     // Utility Functions
     // ========================================
 
@@ -27,6 +44,73 @@
         } catch {
             return null;
         }
+    }
+
+    function limitDepth(obj, maxDepth, currentDepth = 0) {
+        if (currentDepth >= maxDepth) {
+            if (Array.isArray(obj)) {
+                return `[Array(${obj.length})]`;
+            } else if (obj !== null && typeof obj === 'object') {
+                return `{Object: ${Object.keys(obj).length} keys}`;
+            }
+            return obj;
+        }
+
+        if (Array.isArray(obj)) {
+            const limited = obj.slice(0, CONFIG.MAX_ARRAY_ITEMS).map(item => 
+                limitDepth(item, maxDepth, currentDepth + 1)
+            );
+            if (obj.length > CONFIG.MAX_ARRAY_ITEMS) {
+                limited.push(`... +${obj.length - CONFIG.MAX_ARRAY_ITEMS} more`);
+            }
+            return limited;
+        }
+
+        if (obj !== null && typeof obj === 'object') {
+            const limited = {};
+            const keys = Object.keys(obj);
+            for (const key of keys) {
+                limited[key] = limitDepth(obj[key], maxDepth, currentDepth + 1);
+            }
+            return limited;
+        }
+
+        return obj;
+    }
+
+    function processStorageValue(value) {
+        const size = new Blob([value]).size;
+        const isTruncated = value.length > CONFIG.MAX_STRING_LENGTH;
+        
+        const entry = {
+            size: size,
+            truncated: isTruncated,
+        };
+
+        // Always include raw value (for scripted analysis)
+        if (CONFIG.INCLUDE_RAW_VALUE) {
+            entry.value = value;
+        }
+
+        // Add preview if truncated
+        if (isTruncated && CONFIG.INCLUDE_TRUNCATED_PREVIEW) {
+            entry.preview = value.substring(0, CONFIG.MAX_PREVIEW_LENGTH) + '...';
+            entry.truncated_at = CONFIG.MAX_STRING_LENGTH;
+            entry.original_length = value.length;
+        }
+
+        // Try to parse JSON
+        const parsed = tryParseJSON(value);
+        if (parsed !== null) {
+            if (CONFIG.INCLUDE_PARSED_LIMITED) {
+                // Depth-limited version for readability
+                entry.parsed_preview = limitDepth(parsed, CONFIG.MAX_PARSED_DEPTH);
+            }
+            // Full parsed (can be huge)
+            entry.parsed = parsed;
+        }
+
+        return entry;
     }
 
     function downloadBlob(blob, filename) {
@@ -48,35 +132,35 @@
         const data = {
             localStorage: {},
             sessionStorage: {},
-            size: { local: 0, session: 0 }
+            size: { local: 0, session: 0 },
+            stats: {
+                local: { total: 0, truncated: 0 },
+                session: { total: 0, truncated: 0 }
+            }
         };
 
         // localStorage
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             const value = localStorage.getItem(key);
-            const size = new Blob([value]).size;
-
-            data.localStorage[key] = {
-                value: value,
-                size: size,
-                parsed: tryParseJSON(value)
-            };
-            data.size.local += size;
+            const entry = processStorageValue(value);
+            
+            data.localStorage[key] = entry;
+            data.size.local += entry.size;
+            data.stats.local.total++;
+            if (entry.truncated) data.stats.local.truncated++;
         }
 
         // sessionStorage
         for (let i = 0; i < sessionStorage.length; i++) {
             const key = sessionStorage.key(i);
             const value = sessionStorage.getItem(key);
-            const size = new Blob([value]).size;
-
-            data.sessionStorage[key] = {
-                value: value,
-                size: size,
-                parsed: tryParseJSON(value)
-            };
-            data.size.session += size;
+            const entry = processStorageValue(value);
+            
+            data.sessionStorage[key] = entry;
+            data.size.session += entry.size;
+            data.stats.session.total++;
+            if (entry.truncated) data.stats.session.truncated++;
         }
 
         return data;
@@ -520,7 +604,8 @@
                         width: window.innerWidth,
                         height: window.innerHeight
                     },
-                    script_version: '1.0.0'
+                    script_version: '1.1.0',
+                    config: CONFIG
                 },
                 storage: null,
                 indexedDB: [],
@@ -579,11 +664,19 @@
             return data;
         }
 
-        async exportData(data) {
+        async exportData(dump) {
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
             const filename = `perplexity-dump_${timestamp}.json`;
-            const json = JSON.stringify(data, null, 2);
+            const json = JSON.stringify(dump, null, 2);
             const blob = new Blob([json], { type: 'application/json' });
+            
+            // Log stats
+            console.log('📊 Dump Statistics:');
+            console.log(`  localStorage: ${dump.storage.stats.local.total} keys (${dump.storage.stats.local.truncated} truncated)`);
+            console.log(`  sessionStorage: ${dump.storage.stats.session.total} keys (${dump.storage.stats.session.truncated} truncated)`);
+            console.log(`  IndexedDB: ${dump.indexedDB.length} databases`);
+            console.log(`  File size: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
+            
             downloadBlob(blob, filename);
         }
     }
@@ -598,5 +691,7 @@
         new PerplexityDumper();
     }
 
-    console.log('📦 Perplexity Storage Dumper loaded. Press Ctrl+Shift+D to dump state.');
+    console.log('📦 Perplexity Storage Dumper v1.1.0 loaded.');
+    console.log('   Press Ctrl+Shift+D to dump state.');
+    console.log('   Config:', CONFIG);
 })();
