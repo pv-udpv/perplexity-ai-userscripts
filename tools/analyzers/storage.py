@@ -53,8 +53,8 @@ class StorageAnalyzer:
         patterns = defaultdict(int)
         
         for key in keys:
-            # Detect prefix pattern (word_*)
-            match = re.match(r'^([a-z_]+?)_', key)
+            # Detect prefix pattern (word_*) - case insensitive, allowing numbers
+            match = re.match(r'^([a-zA-Z0-9_]+?)_', key, re.IGNORECASE)
             if match:
                 prefix = match.group(1)
                 patterns[f'{prefix}_*'] += 1

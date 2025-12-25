@@ -40,7 +40,7 @@ class CodeGraphAnalyzer:
         
         return {
             'components': self.files,
-            'graph': dict(self.imports),
+            'graph': {k: list(v) for k, v in self.imports.items()},  # Convert sets to lists
             'stats': {
                 'total_components': len(self.files),
                 'total_dependencies': sum(len(deps) for deps in self.imports.values()),
