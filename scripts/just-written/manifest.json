@@ -1,11 +1,28 @@
 {
-  "name": "Just Written - Simple Perplexity AI Script",
-  "namespace": "https://github.com/pv-udpv/perplexity-ai-userscripts",
-  "version": "1.0.0",
-  "description": "A simple example userscript demonstrating keyboard shortcuts, message monitoring, and UI injection for Perplexity AI.",
+  "name": "Just Written Example",
+  "version": "0.1.0",
   "author": "pv-udpv",
-  "license": "MIT",
-  "match": ["https://www.perplexity.ai/*"],
-  "grant": [],
-  "run-at": "document-idle"
+  "description": "Example userscript demonstrating ViteMonkey build system",
+  "match": [
+    "https://www.perplexity.ai/*"
+  ],
+  "grant": [
+    "GM_getValue",
+    "GM_setValue"
+  ],
+  "distribution": {
+    "gist": {
+      "enabled": true,
+      "gistId": "8c0bafb4af72141a40f207b964b68725",
+      "filename": "just-written.user.js",
+      "description": "Perplexity AI userscripts (auto-synced from GitHub)"
+    },
+    "greasyfork": {
+      "enabled": false
+    }
+  },
+  "build": {
+    "externalGlobals": {},
+    "minify": false
+  }
 }

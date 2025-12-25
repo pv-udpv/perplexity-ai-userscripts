@@ -1,0 +1,15 @@
+{
+  "name": "gist-sync",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "TypeScript-based GitHub Gist sync script",
+  "scripts": {
+    "sync": "tsx sync-to-gist.ts"
+  },
+  "dependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
