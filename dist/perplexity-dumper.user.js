@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Perplexity Storage Dumper
 // @namespace    https://github.com/pv-udpv/perplexity-ai-plug
-// @version      1.1.0
+// @version      1.2.0
 // @description  Dump all Perplexity.ai runtime context (storage, caches, state) to JSON for offline analysis
 // @author       pv-udpv
 // @match        https://www.perplexity.ai/*
@@ -27,6 +27,19 @@
         MAX_PREVIEW_LENGTH: 200,           // Preview length in truncated.preview
         MAX_PARSED_DEPTH: 3,               // Max depth for parsed JSON objects
         MAX_ARRAY_ITEMS: 10,               // Max array items to include
+        
+        // Cache settings
+        CACHE_DOWNLOAD_BODIES: true,       // Download actual cached content
+        CACHE_MAX_BODY_SIZE: 500000,       // Max body size (500KB per file)
+        CACHE_INCLUDE_TYPES: [             // Content types to include
+            'text/javascript',
+            'application/javascript',
+            'text/css',
+            'text/html',
+            'application/json',
+            'application/x-javascript',
+        ],
+        CACHE_TRUNCATE_BODIES: true,       // Truncate large bodies
         
         // What to include in output
         INCLUDE_RAW_VALUE: true,           // Keep original value (can be huge)
@@ -111,6 +124,15 @@
         }
 
         return entry;
+    }
+
+    function shouldIncludeCacheEntry(contentType) {
+        if (!CONFIG.CACHE_DOWNLOAD_BODIES) return false;
+        if (!contentType) return false;
+        
+        return CONFIG.CACHE_INCLUDE_TYPES.some(type => 
+            contentType.toLowerCase().includes(type.toLowerCase())
+        );
     }
 
     function downloadBlob(blob, filename) {
@@ -225,37 +247,100 @@
 
     async function dumpCaches() {
         if (!('caches' in window)) {
-            return [];
+            return { caches: [], stats: { total: 0, downloaded: 0, skipped: 0 } };
         }
 
         try {
             const cacheNames = await caches.keys();
             const dumps = [];
+            let totalEntries = 0;
+            let downloadedBodies = 0;
+            let skippedBodies = 0;
 
             for (const cacheName of cacheNames) {
                 const cache = await caches.open(cacheName);
                 const requests = await cache.keys();
 
                 const entries = [];
+                
                 for (const req of requests) {
-                    entries.push({
+                    totalEntries++;
+                    
+                    const entry = {
                         url: req.url,
                         method: req.method,
                         headers: Object.fromEntries(req.headers.entries()),
-                        cached_at: new Date().toISOString()
-                    });
+                        cached_at: new Date().toISOString(),
+                    };
+
+                    // Try to get response body
+                    try {
+                        const response = await cache.match(req);
+                        if (response) {
+                            const contentType = response.headers.get('content-type') || '';
+                            entry.response = {
+                                status: response.status,
+                                statusText: response.statusText,
+                                headers: Object.fromEntries(response.headers.entries()),
+                                contentType: contentType,
+                            };
+
+                            // Download body if matches filter
+                            if (shouldIncludeCacheEntry(contentType)) {
+                                try {
+                                    const text = await response.text();
+                                    const size = new Blob([text]).size;
+                                    
+                                    entry.response.bodySize = size;
+                                    
+                                    // Truncate if too large
+                                    if (CONFIG.CACHE_TRUNCATE_BODIES && size > CONFIG.CACHE_MAX_BODY_SIZE) {
+                                        entry.response.body = text.substring(0, CONFIG.CACHE_MAX_BODY_SIZE);
+                                        entry.response.bodyTruncated = true;
+                                        entry.response.originalSize = size;
+                                    } else {
+                                        entry.response.body = text;
+                                        entry.response.bodyTruncated = false;
+                                    }
+                                    
+                                    downloadedBodies++;
+                                } catch (bodyError) {
+                                    console.warn(`Failed to read body for ${req.url}:`, bodyError);
+                                    entry.response.bodyError = bodyError.message;
+                                    skippedBodies++;
+                                }
+                            } else {
+                                entry.response.bodySkipped = true;
+                                entry.response.skipReason = 'Content type not in filter';
+                                skippedBodies++;
+                            }
+                        }
+                    } catch (responseError) {
+                        console.warn(`Failed to match response for ${req.url}:`, responseError);
+                        entry.responseError = responseError.message;
+                    }
+
+                    entries.push(entry);
                 }
 
                 dumps.push({
                     name: cacheName,
-                    entries: entries
+                    entries: entries,
+                    count: entries.length
                 });
             }
 
-            return dumps;
+            return {
+                caches: dumps,
+                stats: {
+                    total: totalEntries,
+                    downloaded: downloadedBodies,
+                    skipped: skippedBodies
+                }
+            };
         } catch (error) {
             console.error('Failed to dump caches:', error);
-            return [];
+            return { caches: [], stats: { total: 0, downloaded: 0, skipped: 0, error: error.message } };
         }
     }
 
@@ -604,12 +689,12 @@
                         width: window.innerWidth,
                         height: window.innerHeight
                     },
-                    script_version: '1.1.0',
+                    script_version: '1.2.0',
                     config: CONFIG
                 },
                 storage: null,
                 indexedDB: [],
-                caches: [],
+                caches: null,
                 cookies: [],
                 state: null,
                 network: null
@@ -627,7 +712,7 @@
                     }))
                 },
                 {
-                    label: 'Cache API',
+                    label: 'Cache API + Bodies',
                     fn: async () => (data.caches = await dumpCaches())
                 },
                 {
@@ -675,6 +760,7 @@
             console.log(`  localStorage: ${dump.storage.stats.local.total} keys (${dump.storage.stats.local.truncated} truncated)`);
             console.log(`  sessionStorage: ${dump.storage.stats.session.total} keys (${dump.storage.stats.session.truncated} truncated)`);
             console.log(`  IndexedDB: ${dump.indexedDB.length} databases`);
+            console.log(`  Caches: ${dump.caches.stats.total} entries (${dump.caches.stats.downloaded} bodies downloaded, ${dump.caches.stats.skipped} skipped)`);
             console.log(`  File size: ${(blob.size / 1024 / 1024).toFixed(2)} MB`);
             
             downloadBlob(blob, filename);
@@ -691,7 +777,8 @@
         new PerplexityDumper();
     }
 
-    console.log('📦 Perplexity Storage Dumper v1.1.0 loaded.');
+    console.log('📦 Perplexity Storage Dumper v1.2.0 loaded.');
     console.log('   Press Ctrl+Shift+D to dump state.');
+    console.log('   Cache body download:', CONFIG.CACHE_DOWNLOAD_BODIES ? 'ENABLED' : 'DISABLED');
     console.log('   Config:', CONFIG);
 })();
