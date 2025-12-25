@@ -1,0 +1,112 @@
+name: Sync to Gist
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/**'
+      - 'dist/**'
+      - 'README.md'
+  workflow_dispatch:  # Manual trigger support
+
+jobs:
+  update-gist:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Build Gist payload
+        id: build
+        run: |
+          # Generate JSON payload with all relevant files
+          node <<'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          
+          const files = {};
+          
+          // Scan dist/ for compiled userscripts
+          if (fs.existsSync('./dist')) {
+            fs.readdirSync('./dist').forEach(file => {
+              if (file.endsWith('.user.js')) {
+                files[file] = {
+                  content: fs.readFileSync(path.join('./dist', file), 'utf8')
+                };
+              }
+            });
+          }
+          
+          // Add README
+          if (fs.existsSync('./README.md')) {
+            files['README.md'] = {
+              content: fs.readFileSync('./README.md', 'utf8')
+            };
+          }
+          
+          // Add main documentation files
+          ['INSTALLATION.md', 'PLUGIN_DEVELOPMENT_GUIDE.md'].forEach(doc => {
+            if (fs.existsSync(`./${doc}`)) {
+              files[doc] = {
+                content: fs.readFileSync(`./${doc}`, 'utf8')
+              };
+            }
+          });
+          
+          const payload = {
+            description: "Perplexity AI userscripts collection (auto-synced from GitHub)",
+            files
+          };
+          
+          fs.writeFileSync('gist-payload.json', JSON.stringify(payload, null, 2));
+          console.log(`✅ Prepared ${Object.keys(files).length} files for sync`);
+          console.log('Files:', Object.keys(files).join(', '));
+          EOF
+      
+      - name: Update Gist
+        env:
+          GIST_ID: 8c0bafb4af72141a40f207b964b68725
+          GITHUB_TOKEN: ${{ secrets.GIST_TOKEN }}
+        run: |
+          if [ -z "${GITHUB_TOKEN}" ]; then
+            echo "::error::GIST_TOKEN secret not set!"
+            echo "Please add a GitHub PAT with 'gist' scope to repository secrets."
+            exit 1
+          fi
+          
+          response=$(curl -s -w "\n%{http_code}" -X PATCH \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -d @gist-payload.json \
+            "https://api.github.com/gists/${GIST_ID}")
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n-1)
+          
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ Gist updated successfully"
+            echo "🔗 https://gist.github.com/pv-udpv/${GIST_ID}"
+            
+            # Extract updated files count
+            files_count=$(echo "$body" | jq -r '.files | length')
+            echo "📦 Updated $files_count files in gist"
+          else
+            echo "::error::Failed to update gist (HTTP $http_code)"
+            echo "$body" | jq -r '.message // .'
+            exit 1
+          fi
+      
+      - name: Verify sync
+        run: |
+          echo "::notice::Gist synchronization completed"
+          echo "View at: https://gist.github.com/pv-udpv/8c0bafb4af72141a40f207b964b68725"
