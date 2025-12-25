@@ -50,6 +50,16 @@ This directory contains comprehensive documentation for implementing four major 
    - Shareable and embeddable projects
    - 20+ subtasks across 4 phases
 
+### Security Documentation
+
+7. **[SECURITY_CONSIDERATIONS.md](./SECURITY_CONSIDERATIONS.md)** 🔒
+   - Critical security guidelines for implementation
+   - Mitigations for code injection vulnerabilities
+   - WebSocket security best practices
+   - Input validation and sanitization
+   - CDN integrity checks (SRI)
+   - Security checklist for each feature
+
 ## 🎯 Quick Start
 
 ### For Project Managers
