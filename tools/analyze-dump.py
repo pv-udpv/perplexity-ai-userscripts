@@ -136,19 +136,27 @@ class AnalysisPipeline:
         
         timestamp = self.data.get('metadata', {}).get('timestamp', '')[:16].replace(':', '-')
         
+        # Create case-insensitive mapping of section names
+        data_keys = {k.lower(): k for k in self.data.keys()}
+        
         for section in sections:
-            if section not in self.data:
+            section_lower = section.lower()
+            
+            # Find the actual key in data (case-insensitive)
+            actual_key = data_keys.get(section_lower)
+            
+            if not actual_key:
                 console.print(f"[yellow]⚠️  Section '{section}' not found[/yellow]")
                 continue
             
-            export_data = self.data[section]
+            export_data = self.data[actual_key]
             
             if format == 'json':
-                filename = f"dump_{section}_{timestamp}.json"
+                filename = f"dump_{section_lower}_{timestamp}.json"
                 filepath = self.output_dir / filename
                 size = DumpExporter.export_json(export_data, filepath)
             elif format == 'gz':
-                filename = f"dump_{section}_{timestamp}.jsonz"
+                filename = f"dump_{section_lower}_{timestamp}.jsonz"
                 filepath = self.output_dir / filename
                 size = DumpExporter.export_gz(export_data, filepath)
             else:
