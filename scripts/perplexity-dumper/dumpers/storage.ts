@@ -1,10 +1,10 @@
 import type { StorageData, StorageEntry } from '../types';
 
-function tryParseJSON(value: string): any {
+function tryParseJSON(value: string): { parsed: any; isValid: boolean } {
   try {
-    return JSON.parse(value);
+    return { parsed: JSON.parse(value), isValid: true };
   } catch {
-    return null;
+    return { parsed: null, isValid: false };
   }
 }
 
@@ -20,11 +20,13 @@ export async function dumpStorage(): Promise<StorageData> {
     const key = localStorage.key(i)!;
     const value = localStorage.getItem(key)!;
     const size = new Blob([value]).size;
+    const parseResult = tryParseJSON(value);
     
     data.localStorage[key] = {
       value,
       size,
-      parsed: tryParseJSON(value),
+      parsed: parseResult.parsed,
+      isValidJSON: parseResult.isValid,
     };
     data.size.local += size;
   }
@@ -34,11 +36,13 @@ export async function dumpStorage(): Promise<StorageData> {
     const key = sessionStorage.key(i)!;
     const value = sessionStorage.getItem(key)!;
     const size = new Blob([value]).size;
+    const parseResult = tryParseJSON(value);
     
     data.sessionStorage[key] = {
       value,
       size,
-      parsed: tryParseJSON(value),
+      parsed: parseResult.parsed,
+      isValidJSON: parseResult.isValid,
     };
     data.size.session += size;
   }

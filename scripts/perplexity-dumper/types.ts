@@ -26,6 +26,7 @@ export interface StorageEntry {
   value: string;
   size: number;
   parsed?: any;
+  isValidJSON: boolean;
 }
 
 export interface IndexedDBData {
@@ -52,7 +53,7 @@ export interface CacheEntry {
   url: string;
   method: string;
   headers: Record<string, string>;
-  cached_at: string;
+  dumped_at: string;
 }
 
 export interface CookieData {
@@ -99,8 +100,6 @@ export interface ServiceWorkerInfo {
 export interface ExportOptions {
   format: 'json' | 'json.gz';
   pretty: boolean;
-  includeEmpty: boolean;
-  maxSize: number;
   sections: DumpSection[];
 }
 

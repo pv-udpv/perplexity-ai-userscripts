@@ -52,8 +52,6 @@ class PerplexityDumper {
     const defaultOptions: ExportOptions = {
       format: 'json',
       pretty: true,
-      includeEmpty: false,
-      maxSize: 50, // MB
       sections: [
         DumpSection.Storage,
         DumpSection.IndexedDB,
@@ -75,14 +73,14 @@ class PerplexityDumper {
       const dump = await this.collectData(defaultOptions, signal);
       await this.exportData(dump, defaultOptions);
       
-      this.modal.setComplete('\u2705 Dump completed successfully!');
+      this.modal.setComplete('✅ Dump completed successfully!');
       setTimeout(() => this.modal.hide(), 2000);
     } catch (error) {
       if (signal.aborted) {
-        this.modal.setError('\u274c Dump cancelled by user');
+        this.modal.setError('❌ Dump cancelled by user');
       } else {
         console.error('Dump error:', error);
-        this.modal.setError(`\u274c Error: ${error instanceof Error ? error.message : String(error)}`);
+        this.modal.setError(`❌ Error: ${error instanceof Error ? error.message : String(error)}`);
       }
       setTimeout(() => this.modal.hide(), 3000);
     }
@@ -164,11 +162,11 @@ class PerplexityDumper {
   }
 
   private async exportData(data: DumpData, options: ExportOptions) {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+    const timestamp = new Date().toISOString().split('.')[0].replace(/:/g, '-');
     const filename = `perplexity-dump_${timestamp}`;
 
     if (options.format === 'json') {
-      await exportToJSON(data, filename, options.pretty);
+      exportToJSON(data, filename, options.pretty);
     } else {
       await exportToJSONGz(data, filename);
     }
