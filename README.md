@@ -1,10 +1,15 @@
 # Perplexity AI Userscripts
 
+[![Sync to Gist](https://github.com/pv-udpv/perplexity-ai-plug/actions/workflows/sync-to-gist.yml/badge.svg)](https://github.com/pv-udpv/perplexity-ai-plug/actions/workflows/sync-to-gist.yml)
+[![GitHub release](https://img.shields.io/github/v/release/pv-udpv/perplexity-ai-plug?include_prereleases)](https://github.com/pv-udpv/perplexity-ai-plug/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A curated collection of open-source userscripts for enhancing [Perplexity AI](https://www.perplexity.ai) productivity and user experience.
 
 🚀 **Built with**: ViteMonkey + TypeScript + Modern DOM API  
 🔧 **Compatible**: Tampermonkey, Violentmonkey (Chrome, Firefox, Safari)  
 📦 **Package Manager**: npm (or `uv pip` for Python-based builds)  
+🔄 **Auto-synced**: Changes automatically published to [GitHub Gist](https://gist.github.com/pv-udpv/8c0bafb4af72141a40f207b964b68725)
 
 ---
 
@@ -54,7 +59,7 @@ This repository provides high-quality, well-tested userscripts that extend Perpl
    - [Tampermonkey](https://www.tampermonkey.net/) (Chrome, Firefox, Safari, Edge)
    - [Violentmonkey](https://violentmonkey.github.io/) (Chrome, Firefox)
 
-2. **Install a Script** from [Releases](https://github.com/pv-udpv/perplexity-ai-userscripts/releases):
+2. **Install a Script** from [Releases](https://github.com/pv-udpv/perplexity-ai-userscripts/releases) or [Gist](https://gist.github.com/pv-udpv/8c0bafb4af72141a40f207b964b68725):
    - Click on a `.user.js` file
    - Your userscript manager will prompt to install
    - Visit [perplexity.ai](https://www.perplexity.ai) to see it in action
@@ -172,7 +177,19 @@ See [RULES.md](./RULES.md) for complete guidelines.
 | **Vitest** | Unit testing |
 | **ESLint + Prettier** | Code quality & formatting |
 | **Tampermonkey API** | Storage, HTTP, utilities |
-| **GitHub Actions** | CI/CD automation (planned) |
+| **GitHub Actions** | CI/CD automation, gist sync |
+
+---
+
+## 🔄 Auto-Sync to Gist
+
+This repository automatically synchronizes compiled userscripts to a [public GitHub Gist](https://gist.github.com/pv-udpv/8c0bafb4af72141a40f207b964b68725) on every push to `main`. This provides:
+
+- 🔗 **Direct install links** for userscript managers
+- 📦 **Always up-to-date** scripts without waiting for releases
+- 🌐 **CDN-friendly** distribution via gist.github.com
+
+Workflow: [`.github/workflows/sync-to-gist.yml`](.github/workflows/sync-to-gist.yml)
 
 ---
 
@@ -215,9 +232,9 @@ Feel free to fork, modify, and distribute these userscripts.
 
 - [ ] Script 1: ViteMonkey template with examples
 - [ ] Script 2: Example productivity script
-- [ ] Auto-update system via GitHub releases
+- [x] Auto-update system via GitHub releases
+- [x] GitHub Actions CI/CD pipeline with gist sync
 - [ ] Community script directory
-- [ ] GitHub Actions CI/CD pipeline
 - [ ] Distribution via Greasy Fork (optional)
 
 ---
