@@ -1,0 +1,43 @@
+name: Scaffold New Userscript
+description: Create a new userscript with auto-scaffolding
+labels: [enhancement, scaffold]
+
+body:
+  - type: input
+    id: script-name
+    attributes:
+      label: Script Name
+      description: Name for the new userscript (e.g., my-awesome-script)
+      placeholder: my-awesome-script
+    validations:
+      required: true
+
+  - type: input
+    id: target-url
+    attributes:
+      label: Target URL
+      description: Website URL to analyze for DOM/API extraction
+      placeholder: https://example.com
+    validations:
+      required: true
+
+  - type: textarea
+    id: features
+    attributes:
+      label: Features to Implement
+      description: List the features you want to implement (one per line)
+      placeholder: |
+        - Auto-fill form fields
+        - Monitor page changes
+        - Export data to CSV
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Additional Context
+      description: Any additional information about the script
+      placeholder: Optional context or requirements
+    validations:
+      required: false

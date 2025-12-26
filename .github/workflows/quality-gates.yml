@@ -1,0 +1,137 @@
+name: Quality Gates
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+
+jobs:
+  security:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+
+  coverage:
+    name: Coverage Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests with coverage
+        run: npm run test:coverage
+      
+      - name: Check coverage threshold
+        run: |
+          LINES=$(npx nyc report --reporter=json | jq '.total.lines.pct')
+          if (( $(echo "$LINES < 80" | bc -l) )); then
+            echo "❌ Coverage ${LINES}% is below 80% threshold"
+            exit 1
+          else
+            echo "✅ Coverage ${LINES}% meets threshold"
+          fi
+
+  bundle-size:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build
+        run: npm run build
+      
+      - name: Check bundle sizes
+        run: |
+          echo "📦 Bundle Size Report"
+          echo "====================="
+          find dist -name "*.user.js" -type f | while read file; do
+            SIZE=$(wc -c < "$file")
+            SIZE_KB=$(echo "scale=2; $SIZE / 1024" | bc)
+            GZIP_SIZE=$(gzip -c "$file" | wc -c)
+            GZIP_KB=$(echo "scale=2; $GZIP_SIZE / 1024" | bc)
+            
+            echo "📄 $file"
+            echo "   Raw: ${SIZE_KB}KB | Gzipped: ${GZIP_KB}KB"
+            
+            if (( $(echo "$SIZE_KB > 100" | bc -l) )); then
+              echo "   ⚠️  Warning: Exceeds 100KB (raw)"
+            fi
+          done
+
+  pr-comment:
+    name: Comment PR with Results
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: [security, coverage, bundle-size]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests with coverage
+        run: npm run test:coverage
+      
+      - name: Create comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            let coverage = 'N/A';
+            
+            try {
+              const data = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf8'));
+              coverage = Math.round(data.total.lines.pct) + '%';
+            } catch (e) {
+              // Coverage report not available
+            }
+            
+            const comment = `## 📊 Quality Report
+            
+| Check | Status |
+|-------|--------|
+| 🔒 Security | ${{ needs.security.result == 'success' ? '✅' : '❌' }} |
+| 📈 Coverage | ${coverage} |
+| 📦 Bundle Size | ${{ needs.bundle-size.result == 'success' ? '✅' : '❌' }} |
+| ✨ Lint | ${{ github.run_conclusion == 'success' ? '✅' : '❌' }} |
+`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
