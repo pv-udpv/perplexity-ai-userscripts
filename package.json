@@ -21,7 +21,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
     "type-check": "tsc --noEmit",
-    "scaffold": "node scripts/scaffold.js"
+    "scaffold": "node scripts/scaffold.js",
+    "dump:install": "bash scripts/install-analyzer.sh",
+    "dump:analyze": "python3 tools/analyze-dump.py",
+    "dump:help": "python3 tools/analyze-dump.py --help"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
@@ -47,6 +50,7 @@
   ],
   "engines": {
     "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "npm": ">=9.0.0",
+    "python": ">=3.10"
   }
 }

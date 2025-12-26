@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#
+# Perplexity Storage Dump Analyzer - Shell Wrapper
+# 
+# Makes the Python analyzer accessible as a simple command:
+#   ./scripts/perplexity-analyze dump.json --analyze
+#   ./scripts/perplexity-analyze dump.json --analyze-deps --output ./results
+#
+
+set -e
+
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+TOOLS_DIR="$PROJECT_ROOT/tools"
+
+# Check Python
+if ! command -v python3 &> /dev/null; then
+    echo "❌ Python 3 is required but not installed."
+    exit 1
+fi
+
+# Check venv (optional, but recommended)
+if [ -d "$PROJECT_ROOT/.venv" ]; then
+    source "$PROJECT_ROOT/.venv/bin/activate"
+elif [ -d "$PROJECT_ROOT/venv" ]; then
+    source "$PROJECT_ROOT/venv/bin/activate"
+fi
+
+# Run analyzer
+python3 "$TOOLS_DIR/analyze-dump.py" "$@"

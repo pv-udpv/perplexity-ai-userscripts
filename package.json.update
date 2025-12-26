@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "dump:analyze": "python3 tools/analyze-dump.py",
+    "dump:install": "bash scripts/install-analyzer.sh",
+    "dump:help": "python3 tools/analyze-dump.py --help"
+  }
+}

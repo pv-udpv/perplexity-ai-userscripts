@@ -1,19 +1,38 @@
-# Dependencies
-node_modules/
-*.npm
-*.yarn
-.pnp
-.pnp.js
+# Existing patterns...
+# See git for full history
 
-# Build outputs
-dist/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 build/
-.vite/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PIPFILE.lock
 
-# Testing
-coverage/
-.nyc_output/
-*.lcov
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
 # IDE
 .vscode/
@@ -23,31 +42,15 @@ coverage/
 *~
 .DS_Store
 
-# Environment
-.env
-.env.local
-.env.*.local
+# Analyzer outputs
+dumps/
+exports/
+analysis/
+analysis-results/
+*.jsonz
+*.gz
 
-# Logs
-logs/
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# OS
-Thumbs.db
-.DS_Store
-
-# Python (if using uv)
-__pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
-env/
-
-# Lock files (optional)
-package-lock.json
-yarn.lock
-uv.lock
+# Temporary files
+*.tmp
+*.bak
+.temp/
