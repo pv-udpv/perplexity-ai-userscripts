@@ -1,10 +1,10 @@
 import type { DumpData } from '../types';
 
-export async function exportToJSON(
+export function exportToJSON(
   data: DumpData,
   filename: string,
   pretty: boolean = true
-): Promise<void> {
+): void {
   const json = pretty ? JSON.stringify(data, null, 2) : JSON.stringify(data);
   const blob = new Blob([json], { type: 'application/json' });
   downloadBlob(blob, `${filename}.json`);

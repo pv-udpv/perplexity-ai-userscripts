@@ -53,7 +53,7 @@ export async function dumpIndexedDB(
 
         if (onProgress) {
           const progress = ((dbIdx * storeNames.length + storeIdx + 1) / (databases.length * storeNames.length)) * 100;
-          onProgress(storeIdx + 1, storeNames.length);
+          onProgress(progress, 100);
         }
       }
 

@@ -1,21 +1,20 @@
 import type { SPAStateData } from '../types';
 
-function extractReactState(hook: any): any {
+function checkReactAvailability(hook: any): any {
   try {
     const renderer = Array.from(hook.renderers.values())[0] as any;
     if (!renderer) return null;
 
-    // Basic React fiber tree extraction
+    // Basic React availability check
     const fiber = renderer.getFiberRoots?.();
     if (!fiber) return null;
 
     return {
       available: true,
       version: hook.version,
-      // Add more detailed extraction if needed
     };
   } catch (error) {
-    console.error('Failed to extract React state:', error);
+    console.error('Failed to check React availability:', error);
     return null;
   }
 }
@@ -31,7 +30,7 @@ export function dumpSPAState(): SPAStateData {
   // React DevTools
   const reactRoot = (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__;
   if (reactRoot?.renderers?.size) {
-    state.react = extractReactState(reactRoot);
+    state.react = checkReactAvailability(reactRoot);
   }
 
   // Vue DevTools
@@ -41,12 +40,12 @@ export function dumpSPAState(): SPAStateData {
 
   // Global Perplexity objects
   Object.keys(window)
-    .filter((key) => key.startsWith('_pplx') || key.startsWith('__PPLX') || key.includes('perplexity'))
+    .filter((key) => key.startsWith('_pplx') || key.startsWith('__PPLX') || key.toLowerCase().includes('perplexity'))
     .forEach((key) => {
       try {
         state.globalObjects[key] = (window as any)[key];
       } catch (error) {
-        state.globalObjects[key] = `<Error: ${error}>`;
+        state.globalObjects[key] = '<Error accessing property>';
       }
     });
 

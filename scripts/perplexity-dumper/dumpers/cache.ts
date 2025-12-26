@@ -21,7 +21,8 @@ export async function dumpCaches(): Promise<CacheData[]> {
           url: req.url,
           method: req.method,
           headers: Object.fromEntries(req.headers.entries()),
-          cached_at: new Date().toISOString(),
+          // Note: this is the time the cache entry was dumped, not when it was originally cached.
+          dumped_at: new Date().toISOString(),
         });
       }
 
