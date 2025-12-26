@@ -1,0 +1,17 @@
+{
+  "name": "Test Plugin Demo - Perplexity AI",
+  "namespace": "https://github.com/pv-udpv/perplexity-ai-userscripts",
+  "version": "1.0.0",
+  "description": "Test Plugin Demo plugin for Perplexity AI",
+  "author": "pv-udpv",
+  "license": "MIT",
+  "match": [
+    "https://www.perplexity.ai/*"
+  ],
+  "grant": [
+    "GM_setValue",
+    "GM_getValue",
+    "GM_xmlhttpRequest"
+  ],
+  "run-at": "document-idle"
+}

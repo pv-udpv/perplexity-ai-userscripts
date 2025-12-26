@@ -40,7 +40,7 @@ if (!/^[a-z][a-z0-9-]*$/.test(pluginName)) {
   process.exit(1);
 }
 
-const pluginDir = path.join(__dirname, 'scripts', pluginName);
+const pluginDir = path.join(__dirname, '..', pluginName);
 
 // Check if plugin already exists
 if (fs.existsSync(pluginDir)) {

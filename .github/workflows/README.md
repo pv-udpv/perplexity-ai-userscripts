@@ -81,19 +81,109 @@ Workflow triggers automatically on:
 **After**: 5 runs/day, 0 wasted → 0 min/day wasted  
 **Savings**: ~22.5 hours/month of CI time
 
+---
+
+## Auto-Scaffold Userscript
+
+**File**: `scaffold.yml`  
+**Purpose**: Automatically scaffold new userscripts with DOM and API extraction
+
+### When It Runs
+
+Workflow triggers when:
+- **Issue opened** or **edited** with label `scaffold-request`
+
+### What It Does
+
+#### Steps:
+1. **Parse Issue** - Extracts script name, target URL, and features from issue body
+2. **Install Dependencies** - Installs npm packages and Chrome for Puppeteer
+3. **Extract DOM Structure** - Scans target URL for `data-testid` elements
+4. **Extract API Structure** - Intercepts network requests to capture API endpoints
+5. **Generate Scaffolding** - Creates complete userscript structure with:
+   - `index.ts` - Entry point
+   - `manifest.json` - Userscript metadata
+   - `api.ts` - Auto-generated API types
+   - `dom.ts` - Auto-generated DOM selectors
+   - `types.ts` - TypeScript definitions
+   - `utils.ts` - Helper functions
+   - `__tests__/` - Test templates
+   - `README.md` - Documentation
+   - `SCAFFOLD_README.md` - PR instructions
+6. **Lint & Type Check** - Runs linting and type checking on generated code
+7. **Create PR** - Creates a pull request with all generated files
+8. **Comment on Issue** - Updates the original issue with PR link
+
+### Using the Scaffold Workflow
+
+1. **Create an Issue** using the "Scaffold New Userscript" template
+2. Fill in:
+   - **Script Name** (kebab-case, e.g., `my-awesome-script`)
+   - **Target URL** (website to analyze, e.g., `https://example.com`)
+   - **Features to Implement** (list of features)
+3. Add the `scaffold-request` label
+4. Wait for the workflow to run (~2-5 minutes)
+5. Review the auto-generated PR
+6. Implement the features in the scaffolded files
+
+### Example Issue
+
+```markdown
+### Script Name
+chat-enhancer
+
+### Target URL
+https://www.perplexity.ai
+
+### Features to Implement
+- Add keyboard shortcuts
+- Save chat history
+- Export conversations
+
+### Additional Context
+Focus on keyboard navigation
+```
+
+### Generated Structure
+
+```
+scripts/chat-enhancer/
+├── index.ts              # Main implementation
+├── manifest.json         # Userscript metadata
+├── api.ts                # 5 API endpoints (auto-extracted)
+├── dom.ts                # 12 DOM selectors (auto-extracted)
+├── types.ts              # TypeScript types
+├── utils.ts              # Helper functions
+├── __tests__/
+│   └── index.test.ts     # Test template
+├── README.md             # Documentation
+└── SCAFFOLD_README.md    # PR description
+```
+
+### Benefits
+
+✅ **10x Faster**: Scaffolding in minutes instead of hours  
+✅ **Auto-Discovery**: Finds all DOM elements and APIs automatically  
+✅ **Type-Safe**: Generates TypeScript interfaces for APIs  
+✅ **Test-Ready**: Includes test templates and helpers  
+✅ **Documentation**: Auto-generates README with API/DOM references  
+
 ### Troubleshooting
 
 **Workflow didn't run?**
-- Check if files in `paths` filter changed
-- Verify branch name matches trigger
+- Verify issue has `scaffold-request` label
+- Check issue format matches template
 
-**Tests failed?**
-- Check logs in Actions tab
-- Run locally: `npm run test -- scripts/shared`
+**Extraction failed?**
+- Target URL might require authentication
+- Website might block headless browsers
+- Check workflow logs for details
 
-**Coverage too low?**
-- Thresholds: 90% lines, 90% functions, 85% branches
-- Add more tests to increase coverage
+**PR creation failed?**
+- Branch might already exist
+- Git conflicts possible
+
+---
 
 ### Future Workflows
 
@@ -103,5 +193,5 @@ Workflow triggers automatically on:
 
 ---
 
-**Last Updated**: Dec 25, 2025  
+**Last Updated**: Dec 26, 2025  
 **Status**: ✅ Active and Optimized
