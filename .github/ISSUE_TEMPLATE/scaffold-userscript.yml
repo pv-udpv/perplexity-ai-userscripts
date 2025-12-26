@@ -1,0 +1,49 @@
+name: 🤖 Scaffold New Userscript
+description: Create a new userscript with auto-generated scaffolding
+title: "[Scaffold]: "
+labels: ["scaffold-request"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for requesting a new userscript! This will automatically scaffold the project structure.
+  
+  - type: input
+    id: script-name
+    attributes:
+      label: Script Name
+      description: The name of your script in kebab-case (e.g., my-awesome-script)
+      placeholder: my-awesome-script
+    validations:
+      required: true
+  
+  - type: input
+    id: target-url
+    attributes:
+      label: Target URL
+      description: The URL to analyze for DOM structure and API endpoints
+      placeholder: https://example.com
+    validations:
+      required: true
+  
+  - type: textarea
+    id: features
+    attributes:
+      label: Features to Implement
+      description: List the features you want to implement (one per line)
+      placeholder: |
+        - Feature 1
+        - Feature 2
+        - Feature 3
+    validations:
+      required: true
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Additional Context
+      description: Any additional information that would be helpful
+      placeholder: Additional details about your userscript
+    validations:
+      required: false

@@ -79,7 +79,7 @@ cd perplexity-ai-userscripts
 # Install dependencies
 npm install
 
-# Create new plugin
+# Create new plugin (simple)
 npm run scaffold my-plugin-name
 
 # Build all scripts
@@ -97,6 +97,28 @@ npm run format
 ```
 
 **Your plugin will be at:** `dist/my-plugin-name.user.js`
+
+### 🤖 Auto-Scaffolding with GitHub Actions (NEW!)
+
+**Create userscripts 10x faster** with automatic DOM and API extraction:
+
+1. **Create an issue** using the "Scaffold New Userscript" template
+2. **Fill in details**:
+   - Script name (e.g., `chat-enhancer`)
+   - Target URL to analyze (e.g., `https://www.perplexity.ai`)
+   - Features to implement
+3. **Add label** `scaffold-request`
+4. **Wait 2-5 minutes** for the workflow to complete
+5. **Review the PR** with auto-generated code
+
+**What gets generated automatically:**
+- ✅ Complete project structure
+- ✅ DOM selectors from `data-testid` attributes
+- ✅ API types from network requests
+- ✅ Test templates
+- ✅ Documentation
+
+See [`.github/workflows/README.md`](./.github/workflows/README.md) for details.
 
 ### Project Structure
 
@@ -215,9 +237,10 @@ Feel free to fork, modify, and distribute these userscripts.
 
 - [ ] Script 1: ViteMonkey template with examples
 - [ ] Script 2: Example productivity script
+- [x] **Auto-scaffolding system** with DOM/API extraction (GitHub Actions)
 - [ ] Auto-update system via GitHub releases
 - [ ] Community script directory
-- [ ] GitHub Actions CI/CD pipeline
+- [x] GitHub Actions CI/CD pipeline (test automation)
 - [ ] Distribution via Greasy Fork (optional)
 
 ---
