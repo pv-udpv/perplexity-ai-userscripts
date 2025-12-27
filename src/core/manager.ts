@@ -22,6 +22,7 @@ import { StorageService } from './browser/storage';
 import { EventEmitter } from './messaging/event-bus';
 import { PluginManager } from './plugin-manager';
 import { createPanel } from './ui/panel';
+import { createMultiStagePanel } from './ui/multi-stage-panel';
 import { generateId } from './browser/dom-utils';
 
 const CORE_VERSION = '1.0.0';
@@ -121,6 +122,8 @@ export class CoreManager {
   private createUIService(): UIService {
     return {
       createPanel: (config) => createPanel(config),
+      
+      createMultiStagePanel: (config) => createMultiStagePanel(config),
       
       createModal: (config) => {
         // TODO: Implement modal

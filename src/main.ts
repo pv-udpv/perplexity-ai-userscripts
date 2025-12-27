@@ -11,6 +11,7 @@ import type { Plugin } from './core/types';
 import HelloWorldPlugin from './plugins/hello-world';
 import DevToolsPlugin from './plugins/devtools';
 import PerplexityExplorerPlugin from './plugins/perplexity-explorer';
+import FeedbackPanelPlugin from './plugins/feedback-panel';
 
 /**
  * Initialize the application
@@ -26,12 +27,16 @@ async function main() {
     // Get CoreAPI for plugins
     const coreAPI = core.getAPI();
     
+    // Store core API globally for plugins
+    (window as any).__PPLX_CORE__ = coreAPI;
+    
     console.log('[Perplexity AI] Core initialized, version:', coreAPI.version);
     
     // Register plugins
     await core.registerPlugin(HelloWorldPlugin);
     await core.registerPlugin(DevToolsPlugin);
     await core.registerPlugin(PerplexityExplorerPlugin);
+    await core.registerPlugin(FeedbackPanelPlugin);
     
     console.log('[Perplexity AI] Plugins registered successfully');
     

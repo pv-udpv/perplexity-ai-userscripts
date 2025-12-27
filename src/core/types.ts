@@ -114,6 +114,9 @@ export interface UIService {
   /** Create a side panel */
   createPanel(config: PanelConfig): Panel;
   
+  /** Create a multi-stage side panel (HARPA-style) */
+  createMultiStagePanel?(config: any): any;
+  
   /** Create a modal dialog */
   createModal(config: ModalConfig): Modal;
   
